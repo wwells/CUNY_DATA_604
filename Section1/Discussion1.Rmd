@@ -1,0 +1,64 @@
+---
+title: "DATA 604: Simulation and Modeling"
+author: "Walt Wells, Fall 2017"
+subtitle: "Week 1 Discussion"
+output:
+  html_document:
+    css: ../custom.css
+    highlight: zenburn
+    theme: lumen
+---
+
+# Environment Prep
+
+```{r, message=F, warning=F}
+if (!require('tidyr')) install.packages('tidyr')
+if (!require('ggplot2')) install.packages('ggplot2')
+```
+
+# Sample From Exponential Distribution
+
+```{r}
+getMeansAndMins <- function(reps, samples) {
+    # gets means and mins of random samples from exponential distribution
+    #
+    # Args: 
+    #   reps: number of repetitions/sims
+    #   samples: number of samples from distribution
+    # 
+    # Returns:
+    #   long form df for graphing grouped vars
+    
+    means <- c()
+    mins <- c()
+    
+    for (i in 1:reps) {
+        dist <- rexp(samples)
+        means[i] <- mean(dist)
+        mins[i] <- min(dist)
+    }
+    
+    results <- gather(data.frame(means = means, mins = mins), group)
+    results 
+}
+
+results <- getMeansAndMins(100, 30)
+```
+
+# Plot and Interpret results
+
+```{r, message=F}
+ggplot(results, aes(x=value, fill=group)) + 
+    geom_histogram(binwidth = .05, alpha = .5, position="identity") + 
+    ggtitle("Density of Mean and Mins of Simulations, N=100") + 
+    theme(plot.title = element_text(hjust = 0.5))
+```
+
+We can see from the graph that our distribution of means approaches normality (CLT), and the distribution of mins is similar in shape, if not center, to our original exponential distribution.   This is further emphasized if we increase the number of simulations. 
+
+```{r, message=F}
+results <- getMeansAndMins(1000, 30)
+ggplot(results, aes(x=value, fill=group)) + 
+    geom_histogram(binwidth = .05, alpha = .5, position="identity") + 
+    ggtitle("Density of Mean and Mins of Simulations, N=1000") + 
+    theme(plot.title = element_text(hjust = 0.5))
