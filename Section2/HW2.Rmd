@@ -1,0 +1,57 @@
+---
+title: "DATA 604: Simulation and Modeling"
+author: "Walt Wells, Fall 2017"
+subtitle: "HW 2 - Queue Theory"
+output:
+  html_document:
+    css: ../custom.css
+    highlight: zenburn
+    theme: lumen
+---
+
+kelton 2, 3, 5, 12
+
+#  2.6.2  M/G/1 
+
+Given: 
+
+* Avg InterArrival Time = 1.25 min
+* Avg Service Time = continuous distribution between a = 0.1 and b = 1.9
+
+find Wq, W, Lq, L, p
+
+```{r}
+MG1 <- function(ArrivalAvg, ServiceAvg) {
+    # simulation of an MM1 Queue system
+    #
+    # Args: 
+    #   ArrivalAvg: avg time between arrivals into system
+    #   ServiceAvg: avg time at service station
+    #
+    # Returns:
+    #   summary df showing - 
+    #   Wq: avg time spent in queue
+    #   W:  avg time spent in system
+    #   Lq:  avg num entitites in queue
+    #   L:  avg number of entities in the system
+    #   p:  server utilization rate
+    
+    lambda <- 1 / ArrivalAvg
+    mu <- 1 / ServiceAvg
+    
+    p <- lambda / mu
+    Lq <- p^2 / (1 - p)
+    L <- p / (1 - p)
+    W <- 1 / (mu * (1-p))
+    Wq <- p / (mu * (1-p))
+    
+    results <- data.frame(Wq, W, Lq, L, p)
+    results
+}
+```
+
+```{r}
+results <- MG1(1.25, 1)
+knitr::kable(results)
+```
+

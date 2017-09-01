@@ -1,2 +1,4 @@
 .DS_Store
 instancecreds.txt
+*.backup
+*.Rhistory
