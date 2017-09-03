@@ -153,21 +153,20 @@ $(document).ready(function () {
 </div>
 
 
-<p>kelton 2, 3, 5, 12</p>
-<div id="mg1" class="section level1">
-<h1>2.6.2 M/G/1</h1>
-<p>Given:</p>
+<div id="mm1" class="section level1">
+<h1>2.6.1 M/M/1</h1>
 <ul>
 <li>Avg InterArrival Time = 1.25 min</li>
-<li>Avg Service Time = continuous distribution between a = 0.1 and b = 1.9</li>
+<li>Avg Service Time = 1 min</li>
 </ul>
-<p>find Wq, W, Lq, L, p</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MG1 &lt;-<span class="st"> </span>function(ArrivalAvg, ServiceAvg) {
-    <span class="co"># simulation of an MM1 Queue system</span>
+<p>We’ll need an MMC function later so we’ll build here, and use to calculate c=1 so we can compare our MM1 against our two MG1 Queues.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MMC &lt;-<span class="st"> </span>function(ArrivalAvg, ServiceAvg, c){
+    <span class="co"># simulation of an MMC Queue system</span>
     <span class="co">#</span>
     <span class="co"># Args: </span>
     <span class="co">#   ArrivalAvg: avg time between arrivals into system</span>
     <span class="co">#   ServiceAvg: avg time at service station</span>
+    <span class="co">#   c:  number of servers</span>
     <span class="co">#</span>
     <span class="co"># Returns:</span>
     <span class="co">#   summary df showing - </span>
@@ -177,20 +176,28 @@ $(document).ready(function () {
     <span class="co">#   L:  avg number of entities in the system</span>
     <span class="co">#   p:  server utilization rate</span>
     
+    es &lt;-<span class="st"> </span>ServiceAvg
     lambda &lt;-<span class="st"> </span><span class="dv">1</span> /<span class="st"> </span>ArrivalAvg
-    mu &lt;-<span class="st"> </span><span class="dv">1</span> /<span class="st"> </span>ServiceAvg
+    mu &lt;-<span class="st"> </span><span class="dv">1</span> /<span class="st"> </span>ServiceAvg  
     
-    p &lt;-<span class="st"> </span>lambda /<span class="st"> </span>mu
-    Lq &lt;-<span class="st"> </span>p^<span class="dv">2</span> /<span class="st"> </span>(<span class="dv">1</span> -<span class="st"> </span>p)
-    L &lt;-<span class="st"> </span>p /<span class="st"> </span>(<span class="dv">1</span> -<span class="st"> </span>p)
-    W &lt;-<span class="st"> </span><span class="dv">1</span> /<span class="st"> </span>(mu *<span class="st"> </span>(<span class="dv">1</span>-p))
-    Wq &lt;-<span class="st"> </span>p /<span class="st"> </span>(mu *<span class="st"> </span>(<span class="dv">1</span>-p))
+    p &lt;-<span class="st"> </span>lambda /<span class="st"> </span>(c *<span class="st"> </span>mu)
+    
+    <span class="co"># get steady state probability the system is empty</span>
+    <span class="co"># see references for jtoghrul code inspiration </span>
+    i &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>:(c<span class="dv">-1</span>))
+    first &lt;-<span class="st"> </span><span class="kw">sum</span>((c *<span class="st"> </span>p) ^<span class="st"> </span>i /<span class="st"> </span><span class="kw">factorial</span>(i))
+    p0 &lt;-<span class="st"> </span><span class="dv">1</span> /<span class="st"> </span>(first +<span class="st"> </span>(c *<span class="st"> </span>p) ^<span class="st"> </span>c /<span class="st"> </span>( <span class="kw">factorial</span>(c) *<span class="st"> </span>(<span class="dv">1</span>-p)))  
+    
+    Lq &lt;-<span class="st"> </span>((p*(c*p)^c)*p0) /<span class="st"> </span>(<span class="kw">factorial</span>(c)*(<span class="dv">1</span>-p)^<span class="dv">2</span>)
+    Wq &lt;-<span class="st"> </span>Lq /<span class="st"> </span>lambda
+    W &lt;-<span class="st"> </span>Wq +<span class="st"> </span><span class="dv">1</span> /<span class="st"> </span>mu
+    L &lt;-<span class="st"> </span>Lq +<span class="st"> </span>lambda /<span class="st"> </span>mu
     
     results &lt;-<span class="st"> </span><span class="kw">data.frame</span>(Wq, W, Lq, L, p)
-    results
+    results    
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">results &lt;-<span class="st"> </span><span class="kw">MG1</span>(<span class="fl">1.25</span>, <span class="dv">1</span>)
-knitr::<span class="kw">kable</span>(results)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MM1_results &lt;-<span class="st"> </span><span class="kw">MMC</span>(<span class="fl">1.25</span>, <span class="dv">1</span>, <span class="dv">1</span>)
+knitr::<span class="kw">kable</span>(MM1_results)</code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -211,6 +218,224 @@ knitr::<span class="kw">kable</span>(results)</code></pre></div>
 </tr>
 </tbody>
 </table>
+</div>
+<div id="mg1---uniform-continuous-distribution-of-service-time" class="section level1">
+<h1>2.6.2 M/G/1 - Uniform Continuous Distribution of Service Time</h1>
+<ul>
+<li>Avg InterArrival Time = 1.25 min</li>
+<li>Avg Service Time = unif(0.1, 1.9) min</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MG1 &lt;-<span class="st"> </span>function(ArrivalAvg, es, sd) {
+    <span class="co"># simulation of an MM1 Queue system</span>
+    <span class="co">#</span>
+    <span class="co"># Args: </span>
+    <span class="co">#   ArrivalAvg: avg time between arrivals into system</span>
+    <span class="co">#   es:  expected value of the service time distribution</span>
+    <span class="co">#   sd:  standard deviation of the service time distribution</span>
+    <span class="co">#</span>
+    <span class="co"># Returns:</span>
+    <span class="co">#   summary df showing - </span>
+    <span class="co">#   Wq: avg time spent in queue</span>
+    <span class="co">#   W:  avg time spent in system</span>
+    <span class="co">#   Lq:  avg num entitites in queue</span>
+    <span class="co">#   L:  avg number of entities in the system</span>
+    <span class="co">#   p:  server utilization rate</span>
+    
+    lambda &lt;-<span class="st"> </span><span class="dv">1</span> /<span class="st"> </span>ArrivalAvg
+    mu &lt;-<span class="st"> </span><span class="dv">1</span> /<span class="st"> </span>es
+    
+    p &lt;-<span class="st"> </span>lambda /<span class="st"> </span>mu
+    Wq &lt;-<span class="st"> </span>(lambda *<span class="st"> </span>(sd^<span class="dv">2</span> +<span class="st"> </span><span class="dv">1</span>/mu^<span class="dv">2</span>)) /<span class="st"> </span>(<span class="dv">2</span> *<span class="st"> </span>(<span class="dv">1</span> -<span class="st"> </span>lambda/mu))
+    W &lt;-<span class="st"> </span>Wq +<span class="st"> </span>es
+    Lq &lt;-<span class="st"> </span>lambda *<span class="st"> </span>Wq
+    L &lt;-<span class="st"> </span>lambda *<span class="st"> </span>W
+    
+    results &lt;-<span class="st"> </span><span class="kw">data.frame</span>(Wq, W, Lq, L, p)
+    results
+}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">es &lt;-<span class="st"> </span>(<span class="fl">0.1</span> +<span class="st"> </span><span class="fl">1.9</span>) /<span class="st"> </span><span class="dv">2</span>
+sd &lt;-<span class="st"> </span><span class="kw">sqrt</span>((<span class="fl">0.1-1.9</span>)^<span class="dv">2</span> /<span class="st"> </span><span class="dv">12</span>)
+ContUnifMG1_results &lt;-<span class="st"> </span><span class="kw">MG1</span>(<span class="fl">1.25</span>, es, sd)
+knitr::<span class="kw">kable</span>(ContUnifMG1_results)</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Wq</th>
+<th align="right">W</th>
+<th align="right">Lq</th>
+<th align="right">L</th>
+<th align="right">p</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">2.54</td>
+<td align="right">3.54</td>
+<td align="right">2.032</td>
+<td align="right">2.832</td>
+<td align="right">0.8</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="mg1---triangular-distribution-of-service-time" class="section level1">
+<h1>2.6.3 M/G/1 - Triangular Distribution of Service Time</h1>
+<ul>
+<li>Avg InterArrival Time = 1.25 min</li>
+<li>Avg Service Time = triangular(0.1, 1, 1.9) min</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a &lt;-<span class="st"> </span><span class="fl">0.1</span>; b &lt;-<span class="st"> </span><span class="fl">1.9</span>; m &lt;-<span class="st"> </span><span class="dv">1</span>
+es &lt;-<span class="st"> </span>(a +<span class="st"> </span>m +<span class="st"> </span>b) /<span class="st"> </span><span class="dv">3</span>
+sd &lt;-<span class="st"> </span><span class="kw">sqrt</span>((a^<span class="dv">2</span> +<span class="st"> </span>m^<span class="dv">2</span> +<span class="st"> </span>b^<span class="dv">2</span> -<span class="st"> </span>a*m -<span class="st"> </span>a*b -<span class="st"> </span>b*m) /<span class="st"> </span><span class="dv">18</span>)
+ContTriangMG1_results &lt;-<span class="st"> </span><span class="kw">MG1</span>(<span class="fl">1.25</span>, es, sd)
+knitr::<span class="kw">kable</span>(ContTriangMG1_results)</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Wq</th>
+<th align="right">W</th>
+<th align="right">Lq</th>
+<th align="right">L</th>
+<th align="right">p</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">2.27</td>
+<td align="right">3.27</td>
+<td align="right">1.816</td>
+<td align="right">2.616</td>
+<td align="right">0.8</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="compare-results-of-single-server-queues" class="section level1">
+<h1>Compare Results of Single Server Queues</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">compare &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="dt">MM1 =</span> MM1_results, 
+                 <span class="dt">ContUnifMG1 =</span> ContUnifMG1_results, 
+                 <span class="dt">ContTriangMG1 =</span> ContTriangMG1_results)
+knitr::<span class="kw">kable</span>(compare)</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">Wq</th>
+<th align="right">W</th>
+<th align="right">Lq</th>
+<th align="right">L</th>
+<th align="right">p</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MM1</td>
+<td align="right">4.00</td>
+<td align="right">5.00</td>
+<td align="right">3.200</td>
+<td align="right">4.000</td>
+<td align="right">0.8</td>
+</tr>
+<tr class="even">
+<td>ContUnifMG1</td>
+<td align="right">2.54</td>
+<td align="right">3.54</td>
+<td align="right">2.032</td>
+<td align="right">2.832</td>
+<td align="right">0.8</td>
+</tr>
+<tr class="odd">
+<td>ContTriangMG1</td>
+<td align="right">2.27</td>
+<td align="right">3.27</td>
+<td align="right">1.816</td>
+<td align="right">2.616</td>
+<td align="right">0.8</td>
+</tr>
+</tbody>
+</table>
+<p>Here we can see that while the server utilization rate stays the same across all 3 systems, by changing the distribution of the random variable representing server time, we improve speed and performance of the system. We see decreases across the board for both the speed and average number of entities in queue and in system. Our triangular distribution performs the best of the 3 systems.</p>
+</div>
+<div id="mm3" class="section level1">
+<h1>2.6.5 M/M/3</h1>
+<ul>
+<li>Avg InterArrival Time = 1.25 min</li>
+<li>Avg Service Time = 3 min at each of the 3 servers</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MM3_results &lt;-<span class="st"> </span><span class="kw">MMC</span>(<span class="fl">1.25</span>, <span class="dv">3</span>, <span class="dv">3</span>)
+knitr::<span class="kw">kable</span>(MM3_results)</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Wq</th>
+<th align="right">W</th>
+<th align="right">Lq</th>
+<th align="right">L</th>
+<th align="right">p</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">3.235955</td>
+<td align="right">6.235955</td>
+<td align="right">2.588764</td>
+<td align="right">4.988764</td>
+<td align="right">0.8</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="queueing-network" class="section level1">
+<h1>2.6.12 Queueing Network</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">getTraffic &lt;-<span class="st"> </span>function(arrivalRate, serviceTime, c) {
+    arrivalRate /<span class="st"> </span>(c *<span class="st"> </span><span class="dv">1</span>/serviceTime)    
+}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mu &lt;-<span class="st"> </span><span class="dv">1</span>/<span class="dv">6</span> <span class="co"># Arrival Rate</span>
+
+SignIn &lt;-<span class="st"> </span><span class="kw">getTraffic</span>(mu, <span class="dv">3</span>, <span class="dv">2</span>)
+Registration &lt;-<span class="st"> </span><span class="kw">getTraffic</span>(.<span class="dv">9</span>*<span class="st"> </span>mu, <span class="dv">5</span>, <span class="dv">1</span>) 
+Trauma &lt;-<span class="st"> </span><span class="kw">getTraffic</span>(.<span class="dv">1</span> *<span class="st"> </span>mu, <span class="dv">90</span>, <span class="dv">2</span>) 
+Exam &lt;-<span class="st"> </span><span class="kw">getTraffic</span>(.<span class="dv">9</span> *<span class="st"> </span>mu, <span class="dv">16</span>, <span class="dv">3</span>) 
+Treatment &lt;-<span class="st"> </span><span class="kw">getTraffic</span>(.<span class="dv">64</span> *<span class="st"> </span>mu, <span class="dv">15</span>, <span class="dv">2</span>) 
+
+Network &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
+    <span class="dt">SignIn =</span> SignIn,
+    <span class="dt">Registration =</span> Registration, 
+    <span class="dt">Trauma =</span> Trauma,
+    <span class="dt">Exam =</span> Exam,
+    <span class="dt">Treatment =</span> Treatment
+)
+
+Trauma2 &lt;-<span class="st"> </span><span class="kw">getTraffic</span>(.<span class="dv">1</span> *<span class="st"> </span>mu, <span class="dv">90</span>, <span class="dv">3</span>) 
+knitr::<span class="kw">kable</span>(Network)</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">SignIn</th>
+<th align="right">Registration</th>
+<th align="right">Trauma</th>
+<th align="right">Exam</th>
+<th align="right">Treatment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.25</td>
+<td align="right">0.75</td>
+<td align="right">0.75</td>
+<td align="right">0.8</td>
+<td align="right">0.8</td>
+</tr>
+</tbody>
+</table>
+<p>This network works well, although at these rates it is probably not necessary to have 2 stations at SignIn, particularly if arrival mean is every 6 minutes and sign in service mean is every 3 minutes. While it decreases our utilization rate down to 0.5, it may be good to an a server to the Trauma center. While probably among the most expensive to operate, it’s better to have a lower utilization than the worrysome problem of having a long queue for those needing immediate attention.</p>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<ul>
+<li><a href="https://github.com/jtoghrul/Queueing-Theory-M-M-c" class="uri">https://github.com/jtoghrul/Queueing-Theory-M-M-c</a></li>
+<li><a href="https://www.simio.com/publications/Simio-and-Simulation-Modeling-Analysis-Applications-Edition-03/" class="uri">https://www.simio.com/publications/Simio-and-Simulation-Modeling-Analysis-Applications-Edition-03/</a></li>
+</ul>
 </div>
 
 

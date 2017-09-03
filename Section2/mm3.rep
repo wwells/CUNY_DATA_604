@@ -1,0 +1,140 @@
+Simulation	Software Name	JaamSim	-
+Simulation	Software Version	2017-09	-
+Simulation	Configuration File	/Users/wells_walter/Desktop/./mm3.cfg	-
+Simulation	RunNumber	1.0	-
+Simulation	RunIndex	{ 1 }	-
+Simulation	Present Time and Date	Sep 02, 2017 19:16	-
+Simulation	Initialization Duration	0.0	min
+Simulation	Run Duration	525600.0	min
+Simulation	Present Simulation Time	525600.0	min
+
+*** EntityGenerator ***
+
+EntityGenerator1	StateTimes[Breakdown]	0.0	min
+EntityGenerator1	StateTimes[Idle]	0.0	min
+EntityGenerator1	StateTimes[Maintenance]	0.0	min
+EntityGenerator1	StateTimes[Stopped]	0.0	min
+EntityGenerator1	StateTimes[Working]	525600.0	min
+EntityGenerator1	Utilisation	1.0	-
+EntityGenerator1	Commitment	1.0	-
+EntityGenerator1	Availability	1.0	-
+EntityGenerator1	Reliability	1.0	-
+EntityGenerator1	NumberAdded	421786.0	-
+EntityGenerator1	NumberProcessed	421786.0	-
+
+*** EntitySink ***
+
+EntitySink1	StateTimes[None]	525600.0	min
+EntitySink1	NumberAdded	421780.0	-
+EntitySink1	NumberProcessed	421780.0	-
+
+*** Queue ***
+
+Queue1	StateTimes[None]	525600.0	min
+Queue1	NumberAdded	421786.0	-
+Queue1	NumberProcessed	421783.0	-
+Queue1	QueueLengthAverage	2.7519611382277276	-
+Queue1	QueueLengthStandardDeviation	4.267970018547469	-
+Queue1	QueueLengthMinimum	0.0	-
+Queue1	QueueLengthMaximum	42.0	-
+Queue1	QueueLengthTimes[0]	248798.4527857777	min
+Queue1	QueueLengthTimes[1]	53406.59546122138	min
+Queue1	QueueLengthTimes[2]	42771.04537770082	min
+Queue1	QueueLengthTimes[3]	34311.889342315924	min
+Queue1	QueueLengthTimes[4]	27841.836441852858	min
+Queue1	QueueLengthTimes[5]	22593.72486016222	min
+Queue1	QueueLengthTimes[6]	17846.501322884586	min
+Queue1	QueueLengthTimes[7]	14823.118665069122	min
+Queue1	QueueLengthTimes[8]	12130.925615250513	min
+Queue1	QueueLengthTimes[9]	9849.748248513097	min
+Queue1	QueueLengthTimes[10]	7945.475109518225	min
+Queue1	QueueLengthTimes[11]	6358.066116150284	min
+Queue1	QueueLengthTimes[12]	5219.5752164028	min
+Queue1	QueueLengthTimes[13]	4086.087445781596	min
+Queue1	QueueLengthTimes[14]	3304.355189982734	min
+Queue1	QueueLengthTimes[15]	2636.6486497659225	min
+Queue1	QueueLengthTimes[16]	2181.450315450652	min
+Queue1	QueueLengthTimes[17]	1795.8490506495384	min
+Queue1	QueueLengthTimes[18]	1551.187708933929	min
+Queue1	QueueLengthTimes[19]	1208.3315158328974	min
+Queue1	QueueLengthTimes[20]	965.4587705336179	min
+Queue1	QueueLengthTimes[21]	809.5113306000845	min
+Queue1	QueueLengthTimes[22]	651.2301757817606	min
+Queue1	QueueLengthTimes[23]	559.2875815009745	min
+Queue1	QueueLengthTimes[24]	430.1362632837327	min
+Queue1	QueueLengthTimes[25]	346.5512171666758	min
+Queue1	QueueLengthTimes[26]	258.9881977994716	min
+Queue1	QueueLengthTimes[27]	210.79139390003584	min
+Queue1	QueueLengthTimes[28]	176.58323928326365	min
+Queue1	QueueLengthTimes[29]	156.36663553381223	min
+Queue1	QueueLengthTimes[30]	115.03567026653108	min
+Queue1	QueueLengthTimes[31]	75.8085059166693	min
+Queue1	QueueLengthTimes[32]	55.8052542500495	min
+Queue1	QueueLengthTimes[33]	38.438911033112525	min
+Queue1	QueueLengthTimes[34]	34.89274168337646	min
+Queue1	QueueLengthTimes[35]	25.760429649947522	min
+Queue1	QueueLengthTimes[36]	10.32768308344918	min
+Queue1	QueueLengthTimes[37]	5.205238016648218	min
+Queue1	QueueLengthTimes[38]	6.079227416682988	min
+Queue1	QueueLengthTimes[39]	3.17787254996753	min
+Queue1	QueueLengthTimes[40]	1.6752307166578249	min
+Queue1	QueueLengthTimes[41]	1.4398615000071004	min
+Queue1	QueueLengthTimes[42]	0.5841293166624382	min
+Queue1	AverageQueueTime	3.4293001053911074	min
+Queue1	NumberReneged	0.0	-
+
+*** Server ***
+
+Server1	StateTimes[Breakdown]	0.0	min
+Server1	StateTimes[Idle]	73765.88090465	min
+Server1	StateTimes[Maintenance]	0.0	min
+Server1	StateTimes[Stopped]	0.0	min
+Server1	StateTimes[Working]	451834.11909535	min
+Server1	Utilisation	0.8596539556608638	-
+Server1	Commitment	0.8596539556608638	-
+Server1	Availability	1.0	-
+Server1	Reliability	1.0	-
+Server1	NumberAdded	150646.0	-
+Server1	NumberProcessed	150645.0	-
+
+Server2	StateTimes[Breakdown]	0.0	min
+Server2	StateTimes[Idle]	101352.50802141665	min
+Server2	StateTimes[Maintenance]	0.0	min
+Server2	StateTimes[Stopped]	0.0	min
+Server2	StateTimes[Working]	424247.4919785833	min
+Server2	Utilisation	0.8071679832164826	-
+Server2	Commitment	0.8071679832164828	-
+Server2	Availability	1.0	-
+Server2	Reliability	1.0	-
+Server2	NumberAdded	141354.0	-
+Server2	NumberProcessed	141353.0	-
+
+Server3	StateTimes[Breakdown]	0.0	min
+Server3	StateTimes[Idle]	135468.24907731666	min
+Server3	StateTimes[Maintenance]	0.0	min
+Server3	StateTimes[Stopped]	0.0	min
+Server3	StateTimes[Working]	390131.75092268334	min
+Server3	Utilisation	0.7422598000812087	-
+Server3	Commitment	0.7422598000812088	-
+Server3	Availability	1.0	-
+Server3	Reliability	1.0	-
+Server3	NumberAdded	129783.0	-
+Server3	NumberProcessed	129782.0	-
+
+*** SimEntity ***
+
+SimEntity1	StateTimes[None]	525600.0	min
+
+*** Statistics ***
+
+Statistics1	StateTimes[None]	525600.0	min
+Statistics1	NumberAdded	421780.0	-
+Statistics1	NumberProcessed	421780.0	-
+Statistics1	SampleMinimum	1.506647546023851E-6	min
+Statistics1	SampleMaximum	36.98302116134833	min
+Statistics1	SampleAverage	2.997008553594576	min
+Statistics1	SampleStandardDeviation	3.001981360624023	min
+Statistics1	StandardDeviationOfTheMean	0.004622378611645165	min
+Statistics1	TimeAverage	2.997085349043727	min
+Statistics1	TimeStandardDeviation	3.009514017035677	min
+

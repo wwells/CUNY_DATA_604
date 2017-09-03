@@ -9,24 +9,71 @@ output:
     theme: lumen
 ---
 
-kelton 2, 3, 5, 12
-
-#  2.6.2  M/G/1 
-
-Given: 
+# 2.6.1 M/M/1
 
 * Avg InterArrival Time = 1.25 min
-* Avg Service Time = continuous distribution between a = 0.1 and b = 1.9
+* Avg Service Time = 1 min
 
-find Wq, W, Lq, L, p
+We'll need an MMC function later so we'll build here, and use to calculate c=1 so we can compare our MM1 against our two MG1 Queues.  
 
 ```{r}
-MG1 <- function(ArrivalAvg, ServiceAvg) {
-    # simulation of an MM1 Queue system
+MMC <- function(ArrivalAvg, ServiceAvg, c){
+    # simulation of an MMC Queue system
     #
     # Args: 
     #   ArrivalAvg: avg time between arrivals into system
     #   ServiceAvg: avg time at service station
+    #   c:  number of servers
+    #
+    # Returns:
+    #   summary df showing - 
+    #   Wq: avg time spent in queue
+    #   W:  avg time spent in system
+    #   Lq:  avg num entitites in queue
+    #   L:  avg number of entities in the system
+    #   p:  server utilization rate
+    
+    es <- ServiceAvg
+    lambda <- 1 / ArrivalAvg
+    mu <- 1 / ServiceAvg  
+    
+    p <- lambda / (c * mu)
+    
+    # get steady state probability the system is empty
+    # see references for jtoghrul code inspiration 
+    i <- c(0:(c-1))
+    first <- sum((c * p) ^ i / factorial(i))
+    p0 <- 1 / (first + (c * p) ^ c / ( factorial(c) * (1-p)))  
+    
+    Lq <- ((p*(c*p)^c)*p0) / (factorial(c)*(1-p)^2)
+    Wq <- Lq / lambda
+    W <- Wq + 1 / mu
+    L <- Lq + lambda / mu
+    
+    results <- data.frame(Wq, W, Lq, L, p)
+    results    
+}
+
+```
+
+```{r}
+MM1_results <- MMC(1.25, 1, 1)
+knitr::kable(MM1_results)
+```
+
+#  2.6.2  M/G/1 - Uniform Continuous Distribution of Service Time
+
+* Avg InterArrival Time = 1.25 min
+* Avg Service Time = unif(0.1, 1.9) min
+
+```{r}
+MG1 <- function(ArrivalAvg, es, sd) {
+    # simulation of an MM1 Queue system
+    #
+    # Args: 
+    #   ArrivalAvg: avg time between arrivals into system
+    #   es:  expected value of the service time distribution
+    #   sd:  standard deviation of the service time distribution
     #
     # Returns:
     #   summary df showing - 
@@ -37,13 +84,13 @@ MG1 <- function(ArrivalAvg, ServiceAvg) {
     #   p:  server utilization rate
     
     lambda <- 1 / ArrivalAvg
-    mu <- 1 / ServiceAvg
+    mu <- 1 / es
     
     p <- lambda / mu
-    Lq <- p^2 / (1 - p)
-    L <- p / (1 - p)
-    W <- 1 / (mu * (1-p))
-    Wq <- p / (mu * (1-p))
+    Wq <- (lambda * (sd^2 + 1/mu^2)) / (2 * (1 - lambda/mu))
+    W <- Wq + es
+    Lq <- lambda * Wq
+    L <- lambda * W
     
     results <- data.frame(Wq, W, Lq, L, p)
     results
@@ -51,7 +98,78 @@ MG1 <- function(ArrivalAvg, ServiceAvg) {
 ```
 
 ```{r}
-results <- MG1(1.25, 1)
-knitr::kable(results)
+es <- (0.1 + 1.9) / 2
+sd <- sqrt((0.1-1.9)^2 / 12)
+ContUnifMG1_results <- MG1(1.25, es, sd)
+knitr::kable(ContUnifMG1_results)
 ```
 
+#  2.6.3 M/G/1 - Triangular Distribution of Service Time
+
+* Avg InterArrival Time = 1.25 min
+* Avg Service Time = triangular(0.1, 1, 1.9) min
+
+```{r}
+a <- 0.1; b <- 1.9; m <- 1
+es <- (a + m + b) / 3
+sd <- sqrt((a^2 + m^2 + b^2 - a*m - a*b - b*m) / 18)
+ContTriangMG1_results <- MG1(1.25, es, sd)
+knitr::kable(ContTriangMG1_results)
+```
+
+#  Compare Results of Single Server Queues
+
+```{r}
+compare <- rbind(MM1 = MM1_results, 
+                 ContUnifMG1 = ContUnifMG1_results, 
+                 ContTriangMG1 = ContTriangMG1_results)
+knitr::kable(compare)
+```
+
+Here we can see that while the server utilization rate stays the same across all 3 systems, by changing the distribution of the random variable representing server time, we improve speed and performance of the system.   We see decreases across the board for both the speed and average number of entities in queue and in system.   Our triangular distribution performs the best of the 3 systems. 
+
+#  2.6.5 M/M/3
+
+* Avg InterArrival Time = 1.25 min
+* Avg Service Time = 3 min at each of the 3 servers
+
+```{r}
+MM3_results <- MMC(1.25, 3, 3)
+knitr::kable(MM3_results)
+```
+
+#  2.6.12 Queueing Network
+
+```{r}
+getTraffic <- function(arrivalRate, serviceTime, c) {
+    arrivalRate / (c * 1/serviceTime)    
+}
+```
+
+```{r}
+mu <- 1/6 # Arrival Rate
+
+SignIn <- getTraffic(mu, 3, 2)
+Registration <- getTraffic(.9* mu, 5, 1) 
+Trauma <- getTraffic(.1 * mu, 90, 2) 
+Exam <- getTraffic(.9 * mu, 16, 3) 
+Treatment <- getTraffic(.64 * mu, 15, 2) 
+
+Network <- data.frame(
+    SignIn = SignIn,
+    Registration = Registration, 
+    Trauma = Trauma,
+    Exam = Exam,
+    Treatment = Treatment
+)
+
+Trauma2 <- getTraffic(.1 * mu, 90, 3) 
+knitr::kable(Network)
+```
+
+This network works well, although at these rates it is probably not necessary to have 2 stations at SignIn, particularly if arrival mean is every 6 minutes and sign in service mean is every 3 minutes.  While it decreases our utilization rate down to `r Trauma2`, it may be good to an a server to the Trauma center.   While probably among the most expensive to operate, it's better to have a lower utilization than the worrysome problem of having a long queue for those needing immediate attention. 
+
+# References
+
+* https://github.com/jtoghrul/Queueing-Theory-M-M-c
+* https://www.simio.com/publications/Simio-and-Simulation-Modeling-Analysis-Applications-Edition-03/
