@@ -1,4 +1,5 @@
 .DS_Store
 instancecreds.txt
 *.backup
+3eExamplesForSimioV5.91/*
 *.Rhistory
