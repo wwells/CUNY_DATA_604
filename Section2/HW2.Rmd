@@ -68,7 +68,7 @@ knitr::kable(MM1_results)
 
 ```{r}
 MG1 <- function(ArrivalAvg, es, sd) {
-    # simulation of an MM1 Queue system
+    # simulation of an MG1 Queue system
     #
     # Args: 
     #   ArrivalAvg: avg time between arrivals into system
