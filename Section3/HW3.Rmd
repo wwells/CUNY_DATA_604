@@ -1,0 +1,28 @@
+---
+title: "DATA 604: Simulation and Modeling"
+author: "Walt Wells, Fall 2017"
+subtitle: "HW 3 - Kinds of Simulation"
+output:
+  html_document:
+    css: ../custom.css
+    highlight: zenburn
+    theme: lumen
+---
+
+# 3.5.1 Dice Roll in Excel
+
+[XLS for Dice Roll in github](https://github.com/wwells/CUNY_DATA_604/blob/master/Section3/Model_03_01_ww.xls)
+
+a)  See Sheet 1
+b)  See Sheet 2
+c)  Unable to find an appropriate Excel add-in simulator for Mac.  @RISK only works with PC.   
+
+# 3.5.5 Integration - CI in Excel
+
+[XLS for CI in github](https://github.com/wwells/CUNY_DATA_604/blob/master/Section3/Model_03_02_ww.xls)
+
+There is a small red table showing each of the 3 requested CIs.   Regenerating values multiple times, I found no instances where the CI did NOT contain the exact integral value.  
+
+# 3.5.17 Walther's Produce Stand
+
+The full R code for Walther's Produce stand can be found in the Group Discussion post:  https://wwells.github.io/CUNY_DATA_604/Section3/Discussion3.html
