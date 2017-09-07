@@ -9,5 +9,158 @@ output:
     theme: lumen
 ---
 
-# 3.5.17
+# Environment Prep
 
+```{r, message=F, warning=F}
+if (!require('dplyr')) install.packages('dplyr')
+if (!require('ggplot2')) install.packages('ggplot2')
+if (!require('gridExtra')) install.packages('gridExtra')
+```
+
+# 3.5.17 Walther's Produce Stand
+
+First let's organize what we know. 
+
+```{r}
+buy <- c(1.05, 3.17, 1.99, 0.95) #dollars
+sell <- c(1.29, 3.76, 2.23, 1.65) #dollars
+demandTop <- c(10, 8, 14, 11) #lbs
+
+df <- data.frame(cbind(buy, sell, demandTop))
+rownames(df) <- c("oats", "peas", "beans", "barley")
+df
+```
+
+## 90 Day Simulation, Each Product
+
+Now we build a function that will run our simulation.  This function has two helpers that a)  generate a random sample from a discrete uniform distribution representing daily demand, b) gets the profit, revenue, and cost for a given day.
+
+
+```{r}
+simMarket <- function(duration, crop) {
+    # return a time series dataframe where each 
+    # row describes results for crop given a random demand
+    #
+    # Args: 
+    #   duration: length of simulation
+    #   crop:  string representing crop type
+    #
+    # Returns:
+    #   results:  df showing costs, revenue, profit, day number, and demand
+    
+    # Helper Function:  Generate Random Variable
+    getDemand <- function(crop) {
+        # get a sample from a discrete rand distribution representing 
+        # demand for a given crop
+        #
+        # Args: 
+        #   crop:  string representing crop type
+        #
+        # Returns:
+        #   demand:  number representing random day's demand
+        
+        row <- df[crop,]
+        rangeTop <- row$demandTop
+        demand <- ceiling(runif(1, -1, rangeTop)) #-1 so we include a demand of 0
+        demand
+    }
+    
+    # Helper Function:  Get Cost, Revenue and Profit, Single Day
+    getDay <- function(demand, crop) {
+        # return a df row showing results for a day's sales
+        #
+        # Args: 
+        #   demand:  that day's demand
+        #   crop:  string representing crop type
+        #
+        # Returns:
+        #   day:  df row showing day's cost, revenue, profit 
+        #         for a crop given demand
+        
+        row <- df[crop, ]
+        day <- data.frame(cost = rep(0,1), 
+                          revenue = rep(0,1),
+                          profit = rep(0,1))
+        day$cost <- -(row$buy * demand)
+        day$revenue <- row$sell * demand
+        day$profit <- day$revenue + day$cost
+        day
+    }
+    
+    # run helpers to get final results
+    results <- data.frame()
+    for(i in 1:duration) {
+        dayDemand <- getDemand(crop)
+        row <- getDay(dayDemand, crop)
+        row$demand <- dayDemand
+        row$day <- i
+        results <- rbind(results, row)
+    }
+    results
+}
+```
+
+## Run Sim for each crop
+
+```{r}
+oats <- simMarket(90, 'oats')
+peas <- simMarket(90, 'peas')
+beans <- simMarket(90, 'beans')
+barley <- simMarket(90, 'barley')
+
+# example 
+head(oats, 10)
+```
+
+
+## Helper Function:  Make Plots
+
+```{r}
+getPlot <- function(df) {
+    # return a line plot showing sim results over time frame
+    #
+    # Args: 
+    #   df: data frame with the 90 day sim results for a given crop
+    #
+    # Returns:
+    #   p:  ggplot object
+    
+    profit <- sum(df$profit)
+    crop <- deparse(substitute(df))
+    substr(crop, 1, 1) <- toupper(substr(crop, 1, 1))
+    title <- paste0("Sim Results: ", crop)
+    subtitle <- paste0("Total Profit: $", profit)
+    
+    p <- ggplot(df, aes(x=day)) + 
+            geom_line(aes(y=revenue, col="revenue")) + 
+            geom_line(aes(y=cost, col="cost")) + 
+            geom_line(aes(y=profit, col="profit")) + 
+            labs(title=title,
+                 subtitle=subtitle, 
+                 y="dollars",
+                 x="days")
+    p
+}
+```
+
+## Visualize simulation
+
+```{r}
+oatPlot <- getPlot(oats)
+peasPlot <- getPlot(peas)
+beansPlot <- getPlot(beans)
+barleyPlot <- getPlot(barley)
+grid.arrange(oatPlot, peasPlot, beansPlot, barleyPlot, ncol=2)
+```
+
+## What are the totals for the length of our sim? 
+
+```{r}
+all <- rbind(oats, peas, beans, barley)
+dailySum <- all %>%
+    group_by(day) %>%
+    summarise(cost = sum(cost),
+              revenue = sum(revenue),
+              profit = sum(profit))
+colSums(dailySum[2:4])
+```
