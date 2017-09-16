@@ -1,0 +1,77 @@
+---
+title: "DATA 604: Simulation and Modeling"
+author: "Walt Wells, Fall 2017"
+subtitle: "HW 4 - Kinds of Simulation"
+output:
+  html_document:
+    css: ../custom.css
+    highlight: zenburn
+    theme: lumen
+---
+
+# 2.6.9 M/D/1
+
+* Arrival rate $\lambda$ = 1 min
+* Service rate $\mu$ = 1/0.9 min
+
+Find all five stead-state queueing metrics for an M/D/1 queue, where D denotes a deterministic "distribution", ie., the associated RV (in this case representing service times) is a constant with no variation at all (also called a degenerate distribution).   State parameter conditions for your results to be valid.  Compare your results to those if D were replaced by a distribution with mean equal to the constant value from the original D distribution, except having at least some variation.  
+
+#  2.6.2  M/G/1 - Uniform Continuous Distribution of Service Time
+
+* Avg InterArrival Time = 1.25 min
+* Avg Service Time = unif(0.1, 1.9) min
+
+```{r}
+MG1 <- function(ArrivalAvg, es, sd) {
+    # simulation of an MG1 Queue system
+    #
+    # Args: 
+    #   ArrivalAvg: avg time between arrivals into system
+    #   es:  expected value of the service time distribution
+    #   sd:  standard deviation of the service time distribution
+    #
+    # Returns:
+    #   summary df showing - 
+    #   Wq: avg time spent in queue
+    #   W:  avg time spent in system
+    #   Lq:  avg num entitites in queue
+    #   L:  avg number of entities in the system
+    #   p:  server utilization rate
+    
+    lambda <- 1 / ArrivalAvg
+    mu <- 1 / es
+    
+    p <- lambda / mu
+    Wq <- (lambda * (sd^2 + 1/mu^2)) / (2 * (1 - lambda/mu))
+    W <- Wq + es
+    Lq <- lambda * Wq
+    L <- lambda * W
+    
+    results <- data.frame(Wq, W, Lq, L, p)
+    results
+}
+```
+
+```{r}
+es <- (0.1 + 1.9) / 2
+sd <- sqrt((0.1-1.9)^2 / 12)
+ContUnifMG1_results <- MG1(1.25, es, sd)
+knitr::kable(ContUnifMG1_results)
+```
+
+#  2.6.3 M/G/1 - Triangular Distribution of Service Time
+
+* Avg InterArrival Time = 1.25 min
+* Avg Service Time = triangular(0.1, 1, 1.9) min
+
+```{r}
+a <- 0.1; b <- 1.9; m <- 1
+es <- (a + m + b) / 3
+sd <- sqrt((a^2 + m^2 + b^2 - a*m - a*b - b*m) / 18)
+ContTriangMG1_results <- MG1(1.25, es, sd)
+knitr::kable(ContTriangMG1_results)
+```
+
+# 4.10.15 M/D/1 in Simio
+
+Build a Simio model to confirm and cross-check the steady-state queuing-theoretic results from 2.9.   Run a Simio Experiment to deal with issues like warm-up, run length, etc.   Compare sim results and CI with the queuing-theoretic steady-state results in 2.9.    
