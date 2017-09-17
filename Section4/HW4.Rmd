@@ -16,10 +16,7 @@ output:
 
 Find all five stead-state queueing metrics for an M/D/1 queue, where D denotes a deterministic "distribution", ie., the associated RV (in this case representing service times) is a constant with no variation at all (also called a degenerate distribution).   State parameter conditions for your results to be valid.  Compare your results to those if D were replaced by a distribution with mean equal to the constant value from the original D distribution, except having at least some variation.  
 
-#  2.6.2  M/G/1 - Uniform Continuous Distribution of Service Time
-
-* Avg InterArrival Time = 1.25 min
-* Avg Service Time = unif(0.1, 1.9) min
+To solve this, we'll simply use our MG1 formula, and make our G a contstant RV by setting the standard deviation to 0. 
 
 ```{r}
 MG1 <- function(ArrivalAvg, es, sd) {
@@ -52,26 +49,63 @@ MG1 <- function(ArrivalAvg, es, sd) {
 }
 ```
 
-```{r}
-es <- (0.1 + 1.9) / 2
-sd <- sqrt((0.1-1.9)^2 / 12)
-ContUnifMG1_results <- MG1(1.25, es, sd)
-knitr::kable(ContUnifMG1_results)
-```
-
-#  2.6.3 M/G/1 - Triangular Distribution of Service Time
-
-* Avg InterArrival Time = 1.25 min
-* Avg Service Time = triangular(0.1, 1, 1.9) min
+## Steady D
 
 ```{r}
-a <- 0.1; b <- 1.9; m <- 1
-es <- (a + m + b) / 3
-sd <- sqrt((a^2 + m^2 + b^2 - a*m - a*b - b*m) / 18)
-ContTriangMG1_results <- MG1(1.25, es, sd)
-knitr::kable(ContTriangMG1_results)
+es <- .9
+sd <- 0
+MD1 <- MG1(1, es, sd)
 ```
+
+## Slightly Random D
+
+```{r}
+es <- .9
+sd <- .2
+MD1_Var <- MG1(1, es, sd)
+```
+
+## Compare
+
+```{r}
+df <- rbind(MD1, MD1_Var)
+rownames(df) <- c("MD1", "MD1_Var")
+knitr::kable(df)
+```
+
+As we would expect our time in system is just our time in 1ueue + our service rate when D is a constant.
 
 # 4.10.15 M/D/1 in Simio
 
 Build a Simio model to confirm and cross-check the steady-state queuing-theoretic results from 2.9.   Run a Simio Experiment to deal with issues like warm-up, run length, etc.   Compare sim results and CI with the queuing-theoretic steady-state results in 2.9.    
+
+The Model is available at https://github.com/wwells/CUNY_DATA_604/blob/master/Section4/HW4_MD1.spfx
+
+## Building Model
+
+![](MD1_model.png)
+
+## Experiments
+
+Running different experiments called out some interesting issues.   In all experiments we sought a 95% confidence interval, and allowed for a 1 day warm up period.  
+
+### 1 Week Sample, 10X rep
+
+![](MD1_10X.png)
+
+### 1 Week Sample, 25X rep
+
+![](MD1_25X.png)
+
+### 1 Week Sample, 100X rep
+
+![](MD1_100X.png)
+
+
+Around 100 replications we can see results that are finally converging with our steady state theoretical calculations.  
+
+### 10 Week Sample, 100X rep
+
+And here we see something like real convergence around a 10 Week Sample at 100 replications.    
+
+![](MD1_10_100X.png)
