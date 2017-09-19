@@ -1,0 +1,16 @@
+---
+title: "DATA 604: Simulation and Modeling"
+author: "Walt Wells, Fall 2017"
+subtitle: "Week 5 Discussion"
+output:
+  html_document:
+    css: ../custom.css
+    highlight: zenburn
+    theme: lumen
+---
+
+# Random Number Generation
+
+This week, one of the topics in random number generation. Using the software / spreadsheet of your choice, build one of the random number generators discussed in Banks DES. Post your code to the discussion board. What challenges did you have? 
+
+
