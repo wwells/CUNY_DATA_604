@@ -11,6 +11,107 @@ output:
 
 # Random Number Generation
 
-This week, one of the topics in random number generation. Using the software / spreadsheet of your choice, build one of the random number generators discussed in Banks DES. Post your code to the discussion board. What challenges did you have? 
+This week, one of the topics in random number generation. Using the software / spreadsheet of your choice, build one of the random number generators discussed in Banks DES. Post your code to the discussion board. What challenges did you have?
 
+# Environment Prep
+
+```{r, message=F, warning=F}
+if (!require('stats')) install.packages('stats')
+if (!require('ggplot2')) install.packages('ggplot2')
+if (!require('gridExtra')) install.packages('gridExtra')
+```
+
+# Generate Random Number Using Linear Congruential Method
+
+```{r}
+lcm <- function(seed, a, c, m, n) {
+    # Use Linear Congruential Method to generate Random Numbers
+    #
+    # Args: 
+    #   seed:  set X_0 or initial value
+    #   a: multiplier
+    #   c: increment
+    #   m: modulus
+    #   n: number random numbers desired
+    # 
+    # Returns:
+    #   list of length n with random numbers
+    
+    list <- c()
+    
+    Xi <- seed
+    
+    for(i in 0:n) {
+        Xi <- (a*Xi + c) %% m
+        Ri <- Xi / m
+        list[i+1] <- Ri
+    }
+    
+    list
+}
+```
+
+
+## Run LCM method
+
+### Bad Random 
+
+We'll try and generate a string of random variables but with a short period so that they are likely to repeat.
+
+```{r}
+X_0 <- 2
+a <- 8
+c <- 2
+m <- 100
+BadRand <- lcm(X_0, a, c, m, 10^5-1)
+```
+
+```{r}
+a <- ggplot() + geom_density(aes(BadRand))
+b <- ggplot() + stat_ecdf(aes(BadRand))
+grid.arrange(a, b, ncol=2)
+```
+
+### Good Random
+
+We will use the work of Learmonth and Lewis, 1973; and Lewis et al., 1969 to set our variables to ensure very long period. 
+
+```{r}
+X_0 <- 123457
+a <- 7^5
+c <- 0
+m <- 2^31 - 1
+GoodRand <- lcm(X_0, a, c, m, 10^5-1)
+```
+
+```{r}
+a <- ggplot() + geom_density(aes(GoodRand))
+b <- ggplot() + stat_ecdf(aes(GoodRand))
+grid.arrange(a, b, ncol=2)
+```
+
+## Did we generate random numbers that maintain the appearance of randomness?
+
+### Simple Frequency Check
+
+```{r}
+CountReps <- function(Rand) {
+    # checks if any randomly generated numbers appeared more than once
+    #
+    # Args:  
+    #   Rand: string of random numbers to test
+    #
+    # Results:
+    #   returns df, if there are 0 rows, there are zero repeats
+    
+    t <- data.frame(table(Rand))
+    t <- t[t$Freq > 1,]
+    t
+}
+```
+
+```{r}
+CountReps(GoodRand)
+CountReps(BadRand)
+```
 
