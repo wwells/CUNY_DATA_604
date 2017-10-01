@@ -1,0 +1,92 @@
+---
+title: "DATA 604: Simulation and Modeling"
+author: "Walt Wells, Fall 2017"
+subtitle: "Week 6 Discussion"
+output:
+  html_document:
+    css: ../custom.css
+    highlight: zenburn
+    theme: lumen
+---
+
+# Random Variate Generation
+
+## Banks DES 8.8
+
+Develop a generator for a random variable with the pdf below.   Generate 1000 values and plot a histogram. 
+
+\[
+f(x)=\begin{cases}
+    1/3 & 0 \leq x \leq 2 \\
+    1/24 & 2 < x \leq 10 \\
+    0 & otherwise \\
+      \end{cases}
+\]
+
+# Inverse Tranform Method
+
+## Find the CDF 
+
+#### Part 1:  
+
+$$\int_{0}^{x} \frac{1}{3} dx = \frac{x}{3}$$
+
+#### Part 2: 
+(Be sure to add in top limit of prior area here) 
+
+$$\int_{2}^{x} \frac{1}{24} dx + \frac{2}{3} = \frac{x}{24} + \frac{7}{12}$$
+
+#### TEST:   
+If we insert our top limit 10 do we get back 1?   
+
+$$\frac{10}{24} + \frac{7}{12} = 1$$
+
+#### Therefore our CDF: 
+
+\[
+F(x)=\begin{cases}
+    0 &  x < 0 \\
+    \frac{x}{3} &  0 \leq x \leq 2 \\
+    \frac{x}{24} + \frac{7}{12} & 2 < x \leq 10 \\
+    1 & x > 10 \\
+      \end{cases}
+\]
+
+## Set F(X) = R and solve for R
+
+\[
+X=\begin{cases}
+    3R &  0 \leq R \leq 2/3 \\
+    24(R - \frac{7}{12}) &  2/3 < R \leq 1 \\
+   \end{cases}
+\]
+
+## Generate Random Variate
+
+
+```{r}
+n <- 10 ^ 4
+R <- runif(n)
+z <- c()
+
+for (i in R) {
+   if (i < 2/3) {
+       r <- 3 * i
+   } else {
+       r <- 24 * (i - 7/12)
+   }
+   z <- c(z, r)
+}
+```
+
+## Plot
+
+```{r}
+hist(z)
+
+```
+
+
+# References
+
+* [VIDEO - Finding CDF from PDF](https://www.youtube.com/watch?v=WDGyFeuk9oI)
