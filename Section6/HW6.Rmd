@@ -73,7 +73,7 @@ Network$Pi <- Inspector$p
 knitr::kable(Network)
 ```
 
-# Kelton 5.7.4
+# Kelton 5.7.4 + 5.7.5
 
 Consider an office where people come to get their licenses.  3 servers:   reception / application; vision exam; written exam.   
 
@@ -86,11 +86,7 @@ Office opens at 9am, closes at 5pm.   Find:
 
 * W - time customers spend in system
 * utilization of each server station
-* Lq and max - time spent in each of the 3 queues
-
-How many replications should be run to be confident of results?  
-
-# Kelton 5.7.5
+* Lq and Lmax - avg and max customers in each of the 3 queues
 
 Animate 5.7.4.   Make sure to use path objects and make sure distances and walking speeds are reasonable. 
 
