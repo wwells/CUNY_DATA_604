@@ -1,0 +1,14 @@
+---
+title: "DATA 604: Simulation and Modeling"
+author: "Walt Wells, Fall 2017"
+subtitle: "Week 7 Discussion"
+output:
+  html_document:
+    css: ../custom.css
+    highlight: zenburn
+    theme: lumen
+---
+
+# FP Complex Modeling Techniques
+
+This week, we begin an adventure into some more complex modeling using Simio. Discuss some of the intermediate modeling techniques you intend to use in your final project, and discuss how you will use them.
