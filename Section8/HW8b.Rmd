@@ -1,0 +1,250 @@
+---
+title: "Simulation and Modeling"
+author: "Walt Wells, Fall 2017"
+subtitle: "Input Analysis / Variance Reduction Pt2"
+output:
+  html_document:
+    css: ../custom.css
+    highlight: zenburn
+    theme: lumen
+---
+
+# Environment Prep
+
+```{r, message=F, warning=F}
+if (!require('dplyr')) install.packages('dplyr')
+if (!require('ggplot2')) install.packages('ggplot2')
+if (!require('gridExtra')) install.packages('gridExtra')
+```
+
+# Kelton 6.5.4
+
+### CDF for Continuous Uniform Distribution
+
+\[
+F(x)=\begin{cases}
+    0 &  x < a \\
+    \frac{x-a}{b-a} &  a \leq x \leq b \\
+    1 & x > b \\
+      \end{cases}
+\]
+
+### Inverse Transform (Set F(x) = R, solve for X)
+
+\[
+X= a + (b-a)R 
+\]
+
+# Kelton 6.5.5
+
+### CDF for Weibull Distribution
+
+\[
+F(x)=\begin{cases}
+    1 - e^{-(x/\lambda)^{k}}&  x \geq 0 \\
+    0 & x < 0 \\
+      \end{cases}
+\]
+
+### Inverse Transform (Set F(x) = R, solve for X)
+
+\[
+X= \lambda[-ln(1-R)]^{1/k}
+\]
+
+# Kelton 6.5.8 Revisited
+
+First let's organize what we know. 
+
+```{r}
+buy <- c(1.05, 3.17, 1.99, 0.95) #dollars
+sell <- c(1.29, 3.76, 2.23, 1.65) #dollars
+
+df <- data.frame(cbind(buy, sell))
+rownames(df) <- c("oats", "peas", "beans", "barley")
+
+oatDist <- data.frame(cbind(
+    lbs = c(0, 0.5, 1, 1.5, 2, 3, 4, 5, 7.5, 10),
+    prob = c(0.05, 0.07, 0.09, 0.11, 0.15, 0.25, 0.1, 0.09, 0.06, 0.03)
+))
+
+peaDist <- data.frame(cbind(
+    lbs = c(0, 0.5, 1, 1.5, 2, 3),
+    prob = c(0.1, 0.2, 0.2, 0.3, 0.1, 0.1)
+))
+
+beansDist <- data.frame(cbind(
+    lbs = c(0, 1, 3, 4.5),
+    prob = c(0.2, 0.4, 0.3, 0.1)
+))
+
+barleyDist <- data.frame(cbind(
+    lbs = c(0, 0.5, 1, 3.5),
+    prob = c(0.2, 0.4, 0.3, 0.1)
+))
+```
+
+### Create CumProbability
+
+```{r}
+oatDist$cumProb <- cumsum(oatDist$prob)
+peaDist$cumProb <- cumsum(peaDist$prob)
+beansDist$cumProb <- cumsum(beansDist$prob)
+barleyDist$cumProb <- cumsum(barleyDist$prob)
+```
+
+
+## 90 Day Simulation, Each Product
+
+Now we build a function that will run our simulation.  This function has two helpers that a)  generate a random sample from a discrete uniform distribution, then generates the appropriate demand based on the CDF, b) gets the profit, revenue, and cost for a given day.
+
+
+```{r}
+simMarket <- function(duration, crop, cropDist) {
+    # return a time series dataframe where each 
+    # row describes results for crop given a random demand
+    #
+    # Args: 
+    #   duration: length of simulation
+    #   crop:  string representing crop type
+    #   cropDist:   probability of a crop's demand
+    #
+    # Returns:
+    #   results:  df showing costs, revenue, profit, day number, and demand
+    
+    # Helper Function:  Generate Random Variable
+    getDemand <- function(cropDist) {
+        # get a sample from a discrete rand distribution representing 
+        # demand for a given crop
+        #
+        # Args: 
+        #   cropDist:  probable distribution for crop type
+        #
+        # Returns:
+        #   demand:  number representing random day's demand
+        
+        R <- runif(1)
+        demand <- cropDist[which(cropDist[,3] >= R), ][1,1]
+        demand
+    }
+    
+    # Helper Function:  Get Cost, Revenue and Profit, Single Day
+    getDay <- function(demand, crop) {
+        # return a df row showing results for a day's sales
+        #
+        # Args: 
+        #   demand:  that day's demand
+        #   crop:  string representing crop type
+        #
+        # Returns:
+        #   day:  df row showing day's cost, revenue, profit 
+        #         for a crop given demand
+        
+        row <- df[crop, ]
+        day <- data.frame(cost = rep(0,1), 
+                          revenue = rep(0,1),
+                          profit = rep(0,1))
+        day$cost <- -(row$buy * demand)
+        day$revenue <- row$sell * demand
+        day$profit <- day$revenue + day$cost
+        day
+    }
+    
+    # run helpers to get final results
+    results <- data.frame()
+    for(i in 1:duration) {
+        dayDemand <- getDemand(cropDist)
+        row <- getDay(dayDemand, crop)
+        row$demand <- dayDemand
+        row$day <- i
+        results <- rbind(results, row)
+    }
+    results
+}
+```
+
+## Run Sim for each crop
+
+```{r}
+oats <- simMarket(90, 'oats', oatDist)
+peas <- simMarket(90, 'peas', peaDist)
+beans <- simMarket(90, 'beans', beansDist)
+barley <- simMarket(90, 'barley', barleyDist)
+
+# example 
+head(oats, 10)
+```
+
+## Helper Function:  Make Plots
+
+```{r}
+getPlot <- function(df) {
+    # return a line plot showing sim results over time frame
+    #
+    # Args: 
+    #   df: data frame with the 90 day sim results for a given crop
+    #
+    # Returns:
+    #   p:  ggplot object
+    
+    profit <- sum(df$profit)
+    crop <- deparse(substitute(df))
+    substr(crop, 1, 1) <- toupper(substr(crop, 1, 1))
+    title <- paste0("Sim Results: ", crop)
+    subtitle <- paste0("Total Profit: $", profit)
+    
+    p <- ggplot(df, aes(x=day)) + 
+            geom_line(aes(y=revenue, col="revenue")) + 
+            geom_line(aes(y=cost, col="cost")) + 
+            geom_line(aes(y=profit, col="profit")) + 
+            labs(title=title,
+                 subtitle=subtitle, 
+                 y="dollars",
+                 x="days")
+    p
+}
+```
+
+## Visualize One Simulation
+
+Walther got a lot poorer. 
+
+```{r}
+oatPlot <- getPlot(oats)
+peasPlot <- getPlot(peas)
+beansPlot <- getPlot(beans)
+barleyPlot <- getPlot(barley)
+grid.arrange(oatPlot, peasPlot, beansPlot, barleyPlot, ncol=2)
+```
+
+## Repeat Sim
+
+```{r}
+n <- 100
+
+oatList <- t(replicate(n, simMarket(90, 'oats', oatDist)))
+oatSimMean <- mean(unlist(oatList[,3])) * 90
+peasList <- t(replicate(n, simMarket(90, 'peas', peaDist)))
+peasSimMean <- mean(unlist(peasList[,3])) * 90
+beansList <- t(replicate(n, simMarket(90, 'beans', beansDist)))
+beansSimMean <- mean(unlist(beansList[,3])) * 90
+barleyList <- t(replicate(n, simMarket(90, 'barley', barleyDist)))
+barleySimMean <- mean(unlist(barleyList[,3])) * 90
+```
+
+## Means of Profits
+
+```{r}
+profitMeans <- round(data.frame(oats = oatSimMean,
+                          peas = peasSimMean,
+                          beans = beansSimMean,
+                          barley =  barleySimMean), 2)
+
+## Means of Profits Across all Rep
+knitr::kable(profitMeans)
+```
+
+
+# References
+
+* Banks, et all: Discrete Event Simulation
