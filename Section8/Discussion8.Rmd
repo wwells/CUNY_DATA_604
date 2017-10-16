@@ -1,0 +1,127 @@
+---
+title: "DATA 604: Simulation and Modeling"
+author: "Walt Wells, Fall 2017"
+subtitle: "Week 8 Discussion"
+output:
+  html_document:
+    css: ../custom.css
+    highlight: zenburn
+    theme: lumen
+---
+
+# Variance Reduction
+
+This week, one of the topics of interest is variance reduction. Discuss a method of variance reduction in simulation (see Rizzo's SCR chapter 5). Demonstrate the method. Discuss when it might be used.
+
+## Control Variate Method
+
+### Goal
+
+* Reduce variance in a Monte Carlo Estimator of $\theta=E[g(X)]$
+
+### Pre-requisites
+
+* a separate control function f(X) is (ideally) strongly correlated with g(X)
+* we know $\mu = E[f(X)]$
+* for any constant $c$ we can confirm that $\hat{\theta_c}=g(X) + c(f(Y) - \mu)$
+
+### Then
+
+* We can minimize c at -$\frac{Cov(g(X), f(X))}{Var(f(X))}$ and use it to improve our Monte Carlo Estimate
+* We can also use linear regression to calculate a minimized c.
+* Our Var(g(X)) is reduced by $\frac{[Cov(g(X), f(X))]^2}{Var(f(X))}$
+* The % reduction in variance reduction is $100[Cor(g(X), f(X))]^2$
+
+### When would we use this? 
+
+While the examples below are relatively simple and can be solved analytically, for larger more difficult problems we might need to use Monte Carlo integration to make our estimates, and we could improve our performance (both in terms of computational resources required and accuracy) by using a control variate. 
+
+## Helper Function
+
+```{r}
+ControlVarReduction <- function(f, fmu, g, n, regression=F){
+    # given a function to integrate and a control function
+    # provides a DF showing variance reduction using Monte Carlo 
+    # integration with U(0,1)
+    #
+    # Args: 
+    #   f:  control function
+    #   fmu:  expected value of control function
+    #   g:  function to derive mu using Monte Carlo Integration
+    #   n:  number of samples
+    #   regression:  method to derive c*
+    # 
+    # Returns:
+    #   df showing mean, variance, and %variancereduction
+
+    u <- runif(n, 0, 1)
+    B <- f(u);  A <- g(u)
+
+    if (regression) {
+        c_min <- - lm(A ~ B)$coeff[[2]]
+    } else {c_min <- -cov(A, B) / var(B)}
+
+    MC <- g(u)
+    MC_Reduce <- MC + c_min * (f(u) - fmu)
+    reduction <- round((var(MC)-var(MC_Reduce)) / var(MC) * 100, 3)
+    
+    MCrow <- c(mean(MC), var(MC), 0)
+    MCRrow <- c(mean(MC_Reduce), var(MC_Reduce), reduction)
+    
+    df <- data.frame(rbind(MC = MCrow,
+                     MCReduce = MCRrow))
+    names(df) <- c("mean", "variance", "%Reduced")
+    df
+}
+
+```
+
+# Example 1
+
+$$g(X) = \int_{0}^{1} \frac{1}{1+x^3}$$
+We will use the following with as our control variate where $\mu = E[f(X)] = 1.25$:
+
+$$f(X) = \int_{0}^{1} 1+x^3$$
+
+```{r}
+f <- function(u) {
+    # our control
+    1 + u^3
+}
+g <- function(u) {
+    # our desired function to MC Integrate
+    1 / (1 + u^3)
+}
+res1 <- ControlVarReduction(f, 1.25, g, 10^4)
+knitr::kable(res1)
+```
+
+# Example 2 (from Rizzo)
+
+$$g(X) = \int_{0}^{1} \frac{e^{-x}}{1+x^2}$$
+We will use the following with as our control variate where $\mu = E[f(X)] = e^{-.5}*\frac{pi}{4}$:
+
+$$f(X) = \int_{0}^{1} \frac{e^{-.5}}{1+x^2}$$
+
+```{r}
+f <- function(u) {
+    # our control
+    exp(-.5)/(1+u^2)
+}
+
+fmu <- exp(-.5)*pi/4
+
+g <- function(u) {
+    # our desired function to MC Integrate
+    exp(-u)/(1+u^2)
+}
+
+res1 <- ControlVarReduction(f, fmu, g, 10^4, regression=T)
+knitr::kable(res1)
+```
+
+# References
+
+* https://en.wikipedia.org/wiki/Control_variates
+* Statistical Computing with R, Maria L. Rizzo, Chapter 5
+* http://www2.math.su.se/matstat/reports/serieb/2007/rep10/report.pdf
