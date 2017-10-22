@@ -1,0 +1,19 @@
+---
+title: "Simulation and Modeling"
+author: "Walt Wells, Fall 2017"
+subtitle: "Working with Model Data / Monte Carlo Methods"
+output:
+  html_document:
+    css: ../custom.css
+    highlight: zenburn
+    theme: lumen
+---
+
+# Kelton 7.9.6
+
+A small free clinic has a single doctor who sees patients between 8:00am and noon.   She spends 6 to 14 minutes (avg of 10) with each patient and so can theoretically see 6 patients per hour or a total of 24 each day.   Staff is currently scheduling patient arrivals every 10 minutes, but have found that patients arrive as much as 15 minutes early or 30 minutes late, thus causing disruption to other patients.   Worse, about 10% of patients never show up at all causing the doctor's time to be wasted and wasting an appointment that could have been used by other sick patients.   Staff would like ot evaluate alternative scheduling strategies such as scheduling 2-3 arrivals every 20 minutes with the main objective of maximizing the doctors utilization (eg she would really like to see 24 patients each day if possible).   Assume that the doctor will stay untill all scheduled patients are seen, but she is very unhappy if she needs to stay past 12:30.   Measure system performance mainly on the number of patients seen, but also consider the average patient waiting time, and how late the doctor must typically stay to see all the scheduled patients. 
+
+
+# References
+
+* Joines - Chapter 8

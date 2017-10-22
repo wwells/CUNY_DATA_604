@@ -1,0 +1,41 @@
+---
+title: "DATA 604: Simulation and Modeling"
+author: "Walt Wells, Fall 2017"
+subtitle: "Week 9 Discussion"
+output:
+  html_document:
+    css: ../custom.css
+    highlight: zenburn
+    theme: lumen
+---
+
+# Monte Carlo Integration and Variance Reduction
+
+## 5.14
+
+Use importance sampling to obtain a Monte Carlo estimate of: 
+
+$$g(X) = \int_{1}^{\infty} \frac{x^2}{\sqrt{2\pi}} e^{-x^2/2} dx$$
+
+### MC Estimate
+
+```{r}
+m <- 10^4
+u <- runif(m, 1, 5)
+g <- function(x) {(x^2/sqrt(2*pi)) * exp(-(x^2)/2) } 
+```
+
+
+```{r}
+mean(g(u))
+
+integrate(g, 1, Inf)
+curve(g, -5, 5)
+```
+
+
+# References
+
+* Statistical Computing with R, Maria L. Rizzo, Chapter 5
+* Judd Andermann:  Week 8 http://rpubs.com/janderman/data604_wk8_discuss
+* https://math.stackexchange.com/questions/1200443/evaluating-difficult-monte-carlo-integration-in-r
