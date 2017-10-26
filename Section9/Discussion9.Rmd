@@ -11,26 +11,50 @@ output:
 
 # Monte Carlo Integration and Variance Reduction
 
-## 5.14
+## 5.13
 
-Use importance sampling to obtain a Monte Carlo estimate of: 
+Find two importance functions f1 and f2 that are supported on (1, $\infty$) and are close to
+
+$$g(x) = \frac{x^2}{\sqrt{2\pi}} e^{-x^2/2}, x>1$$
+
+Which of the two should produce a smaller variation in estimating: 
 
 $$g(X) = \int_{1}^{\infty} \frac{x^2}{\sqrt{2\pi}} e^{-x^2/2} dx$$
 
-### MC Estimate
-
 ```{r}
-m <- 10^4
-u <- runif(m, 1, 5)
-g <- function(x) {(x^2/sqrt(2*pi)) * exp(-(x^2)/2) } 
+g <- function(x) {
+    (x^2/sqrt(2*pi)) * exp(-(x^2)/2) 
+    } 
 ```
 
 
-```{r}
-mean(g(u))
+Here's a look at the function and relative area of interest.   
 
-integrate(g, 1, Inf)
-curve(g, -5, 5)
+```{r}
+par(mfrow=c(1,2))
+curve(g, -5, 5, main="Unbounded g(x)")
+
+x <- seq(1,5, 0.01)
+plot(g(x)~x, type="h", main="Bounded g(x)")
+par(mfrow=c(1,1))
+```
+
+Let's see what might be some good options for importance functions
+
+```{r}
+f1 <- function(x) {
+    exp(-(x^2)/2) 
+    } 
+f2 <- function(x) {
+    (1/sqrt(2*pi)) * exp(-(x^2)/2)
+}
+```
+
+```{r}
+x <- seq(1,10, 0.01)
+plot(x, f1(x)/g(x), type="l", main="", ylab="fi(x)/g(x)", lty=1, ylim=c(0, 1))
+lines(x, f2(x)/g(x), lty=2)
+legend("topright", legend=c("f1", "f2"), lty=1:2) 
 ```
 
 
