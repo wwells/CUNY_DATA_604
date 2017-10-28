@@ -153,19 +153,16 @@ $(document).ready(function () {
 </div>
 
 
-<div id="markov-chain-monte-carlo---gibbs-sampler" class="section level1">
-<h1>Markov Chain Monte Carlo - Gibbs Sampler</h1>
-<div id="environment-prep" class="section level2">
-<h2>Environment Prep</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">if (!<span class="kw">require</span>(<span class="st">'rmutil'</span>)) <span class="kw">install.packages</span>(<span class="st">'rmutil'</span>) <span class="co">#for dplaplace</span></code></pre></div>
-</div>
-<div id="section" class="section level2">
-<h2>9.4</h2>
+<div id="markov-chain-monte-carlo---metropolis-sampler-laplace-distribution" class="section level1">
+<h1>Markov Chain Monte Carlo - Metropolis Sampler, Laplace Distribution</h1>
 <p>Implement a random walk Metropolis sampler for generating the standard Laplace distribution. For the increment, simulate from a normal distribution. Compare the chains generated when different variances are used for the proposal distribution. Also, compute the acceptance rates of each chain.</p>
 <div id="standard-laplace-distribution" class="section level3">
 <h3>Standard Laplace Distribution:</h3>
 <p><span class="math display">\[g(x) = \frac{1}{2}e^{-|x|}, x \in {R}\]</span></p>
 </div>
+<div id="environment-prep" class="section level2">
+<h2>Environment Prep</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">if (!<span class="kw">require</span>(<span class="st">'rmutil'</span>)) <span class="kw">install.packages</span>(<span class="st">'rmutil'</span>) <span class="co">#for dplaplace</span></code></pre></div>
 <div id="helper-function" class="section level3">
 <h3>Helper Function</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rw.Metropolis &lt;-<span class="st"> </span>function(sigma, x0, N) {

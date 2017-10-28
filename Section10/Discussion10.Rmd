@@ -9,22 +9,19 @@ output:
     theme: lumen
 ---
 
-# Markov Chain Monte Carlo - Gibbs Sampler
-
-## Environment Prep
-
-```{r, warning=F, message=F}
-if (!require('rmutil')) install.packages('rmutil') #for dplaplace
-```
-
-
-## 9.4
+# Markov Chain Monte Carlo - Metropolis Sampler, Laplace Distribution
 
 Implement a random walk Metropolis sampler for generating the standard Laplace distribution. For the increment, simulate from a normal distribution. Compare the chains generated when different variances are used for the proposal distribution. Also, compute the acceptance rates of each chain.
 
 ### Standard Laplace Distribution: 
 
 $$g(x) = \frac{1}{2}e^{-|x|}, x \in {R}$$
+
+## Environment Prep
+
+```{r, warning=F, message=F}
+if (!require('rmutil')) install.packages('rmutil') #for dplaplace
+```
 
 ### Helper Function
 
