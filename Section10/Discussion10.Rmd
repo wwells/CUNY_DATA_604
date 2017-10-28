@@ -1,0 +1,105 @@
+---
+title: "DATA 604: Simulation and Modeling"
+author: "Walt Wells, Fall 2017"
+subtitle: "Week 10 Discussion"
+output:
+  html_document:
+    css: ../custom.css
+    highlight: zenburn
+    theme: lumen
+---
+
+# Markov Chain Monte Carlo - Gibbs Sampler
+
+## Environment Prep
+
+```{r, warning=F, message=F}
+if (!require('rmutil')) install.packages('rmutil') #for dplaplace
+```
+
+
+## 9.4
+
+Implement a random walk Metropolis sampler for generating the standard Laplace distribution. For the increment, simulate from a normal distribution. Compare the chains generated when different variances are used for the proposal distribution. Also, compute the acceptance rates of each chain.
+
+### Standard Laplace Distribution: 
+
+$$g(x) = \frac{1}{2}e^{-|x|}, x \in {R}$$
+
+### Helper Function
+
+```{r}
+rw.Metropolis <- function(sigma, x0, N) {
+    x <- numeric(N)
+    x[1] <- x0
+    u <- runif(N)
+    k <- 0
+    for (i in 2:N) {
+        y <- rnorm(1, x[i-1], sigma)
+        if (u[i] <= dlaplace(y) / dlaplace(x[i-1])) {
+            x[i] <- y 
+        } else {
+            x[i] <- x[i-1]
+            k <- k+1
+        }
+    }
+    return(list(x=x, k=k))
+}
+```
+
+### Run Metropolis Sampler MCMC
+
+```{r}
+set.seed(604)
+N <- 5000
+sigma <- c(.05, .5, 1, 5)
+
+x0 <- 25
+rw1 <- rw.Metropolis(sigma[1], x0, N)
+rw2 <- rw.Metropolis(sigma[2], x0, N)
+rw3 <- rw.Metropolis(sigma[3], x0, N)
+rw4 <- rw.Metropolis(sigma[4], x0, N)
+```
+
+### Calculate Acceptance Rates
+
+```{r}
+#num rejected points
+rejected <- c(rw1$k, rw2$k, rw3$k, rw4$k)
+
+#show % accepted
+perRej <- data.frame(lapply(rejected, function(x) round((1-(x/N)) * 100, 2)))
+names(perRej) <- c("Sigma.05", "Sigma.5", "Sigma1", "Sigma5")
+knitr::kable(perRej)
+```
+
+## Plot Each Chain
+
+```{r}
+par(mfrow=c(2,2))
+refline <- qt(c(.025, .975), df=2)
+rw <- cbind(rw1$x, rw2$x, rw3$x, rw4$x)
+for (j in 1:4) {
+    plot(rw[, j], type='l', 
+        xlab=bquote(sigma == .(round(sigma[j], 3))),
+        ylab = "X", ylim=range(rw[,j]))
+    abline(h=refline)
+}
+```
+
+### Compare Values at different N in chain
+
+```{r}
+a <- c(.05, seq(.1, .9, .1), .95)
+Q <- qlaplace(a)
+rw <- cbind(rw1$x, rw2$x, rw3$x, rw4$x)
+Qrw <- apply(rw, 2, function(x) quantile(x, a))
+chains <- data.frame(round(cbind(Q, Qrw), 3))
+names(chains) <- c("Laplace/Target", "Sigma.05", "Sigma.5", "Sigma1", "Sigma5")
+knitr::kable(chains)
+```
+
+# References
+
+* Statistical Computing with R, Maria L. Rizzo, Chapter 5
+
