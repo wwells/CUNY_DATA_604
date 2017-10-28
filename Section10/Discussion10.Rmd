@@ -98,5 +98,5 @@ knitr::kable(chains)
 
 # References
 
-* Statistical Computing with R, Maria L. Rizzo, Chapter 5
+* Statistical Computing with R, Maria L. Rizzo, Chapter 9
 
