@@ -19,6 +19,39 @@ Model this system without using any links.   Run for 10 days per replication.   
 * Scenario b) Relax the above assumption.   Consider alternative work rules (who services which customer under which conditions) for this same staff.   Evaluate each proposed scenario to see the impact on the metrics.
 * Scenario c)  Model other possible solutions to improve the system.  You may use links if that helps. 
 
+## Setup
+
+Model available at: https://github.com/wwells/CUNY_DATA_604/raw/master/Section10/SpeedeeCar.spfx
+
+### Scenario A 
+
+![](ScenarioA.png)
+
+### Scenario B
+
+![](ScenarioB.png)
+
+## Tables
+
+![](Table.png)
+
+![](SeqTable.png)
+
+## Processes & State Definitions
+
+![](Processes.png)
+
+![](StateDef.png)
+
+
+## Results
+
+### Scenario A
+
+![](S1results.png)
+
+![](S2results.png)
+
 # References
 
-* 
+* https://ashkannegahban.com/lab-8-user-defined-statistics-tally-state-and-output-statistics-in-simio/
