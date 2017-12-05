@@ -119,7 +119,7 @@ If real data is not available, a user can use this suite to simuate the desired 
 *  Simulate and optionally validate data
 *  Organize simulated data by nodes in a data model and export to json for easy upload
 
-Special thanks to Francisco Ortuno, Ph.D, a Senior Bioinformatician at the [Center for Data Intensive Science](https://cdis.uchicago.edu/) at University of Chicago for help planning this suite. 
+Special thanks to Robert Grossman, Ph.D (Director) and Francisco Ortuno, Ph.D;  (Senior Bioinformatician) at the [Center for Data Intensive Science](https://cdis.uchicago.edu/) at University of Chicago for help planning this suite. 
 
 <a href="https://github.com/occ-data/data-simulator">github.com/occ-data/data-simulator</a>
 
