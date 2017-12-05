@@ -23,6 +23,17 @@ __Possible Reasons to Simulate:__  Legal restrictions;   Protected datasets;  PH
 
 <img src="../Assets/Restricted.png", align="middle">
 
+Immediate Motivation
+========================================================
+
+__Building a DataCommons:__  
+The [Open Commons Consortium](http://occ-data.org/) is partnering around a project-specific data commons that will contain a great deal of protected data.   Data Contributor legal agreements are in slow review, and to meet our benchmarks, we need to start standing up services and prepare analysis pipelines over metadata. 
+
+__Solution:__ 
+Work with the data contributor to generate a compendium that statistically represents their planned data submission.   
+
+<img src="http://occ-data.org/images/OCC_RGB_HORIZ.jpg", align="middle">
+
 What does this Suite do?
 ========================================================
 

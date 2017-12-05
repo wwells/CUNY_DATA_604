@@ -23,6 +23,17 @@ __Possible Reasons to Simulate:__  Legal restrictions;   Protected datasets;  PH
 
 <img src="../Assets/Restricted.png", align="middle">
 
+Immediate Motivation
+========================================================
+
+__Building a DataCommons:__  
+The [Open Commons Consortium](http://occ-data.org/) is partnering around a project-specific data commons that will contain a great deal of protected data.   Data Contributor legal agreements are in slow review, and to meet our benchmarks, we need to start standing up services and prepare analysis pipelines over metadata. 
+
+__Solution:__ 
+Work with the data contributor to generate a compendium that statistically represents their planned data submission.   
+
+<img src="http://occ-data.org/images/OCC_RGB_HORIZ.jpg", align="middle">
+
 What does this Suite do?
 ========================================================
 
@@ -72,12 +83,12 @@ head(SimulatedData)
 
 ```
   id num_incidents incident_detected incident_size recurrence_age
-1  1            11              TRUE        Small      0.04422636
-2  2             7              TRUE       Medium      0.02144029
-3  3            10             FALSE       Medium      0.41059932
-4  4            10              TRUE        Small      0.11369047
-5  5            11             FALSE         Large     0.74788775
-6  6             8             FALSE        Small      0.04812870
+1  1             7             FALSE        Small      0.54140634
+2  2            10              TRUE       Medium      0.47505626
+3  3             5             FALSE       Medium      0.12495926
+4  4            12             FALSE       Medium      0.47646156
+5  5            10             FALSE         Large     0.63188429
+6  6             9             FALSE       Medium      0.01617381
 ```
 
 Simulating with Validation
@@ -95,12 +106,12 @@ head(SimulatedData2)
 
 ```
   id num_incidents incident_detected incident_size recurrence_age
-1  1            13             FALSE       Medium      0.03748002
-2  2            13              TRUE        Small      0.12463757
-3  3            14                NA       Medium      0.43771692
-4  4             6             FALSE       Medium              NA
-5  5             9                NA        Small      0.34859252
-6  6             7             FALSE         Large             NA
+1  1            NA                NA          <NA>     0.56279186
+2  2             6             FALSE       Medium      0.21742064
+3  3            11             FALSE       Medium      0.05808466
+4  4             9             FALSE          <NA>     0.04519505
+5  5             8             FALSE       Medium      0.01638041
+6  6             9             FALSE        Small      0.02064268
 ```
 
 Validation Plotting
