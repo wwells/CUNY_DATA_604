@@ -83,12 +83,12 @@ head(SimulatedData)
 
 ```
   id num_incidents incident_detected incident_size recurrence_age
-1  1             5             FALSE        Small      0.04960057
-2  2            12             FALSE       Medium      0.05780482
-3  3             9             FALSE       Medium      0.56871607
-4  4            15              TRUE       Medium      0.10937817
-5  5             4              TRUE       Medium      0.28427252
-6  6            12              TRUE        Small      0.11316996
+1  1             9             FALSE       Medium      0.17598073
+2  2             6             FALSE       Medium      0.30208084
+3  3             9              TRUE        Small      0.03594547
+4  4             9             FALSE        Small      0.09274061
+5  5            10             FALSE       Medium      0.11516690
+6  6            10             FALSE       Medium      0.51945223
 ```
 
 Simulating with Validation
@@ -106,12 +106,12 @@ head(SimulatedData2)
 
 ```
   id num_incidents incident_detected incident_size recurrence_age
-1  1             7             FALSE        Small      0.46643200
-2  2             9              TRUE         Large             NA
-3  3            11             FALSE         Large     0.12575510
-4  4            NA                NA       Medium      0.23591631
-5  5            NA             FALSE       Medium      0.05843747
-6  6            NA              TRUE       Medium      0.06640986
+1  1             8             FALSE       Medium      0.66747923
+2  2            11             FALSE         Large     0.67053266
+3  3            14             FALSE        Small      0.34410011
+4  4            10                NA        Small      0.09633207
+5  5            10             FALSE          <NA>     0.15156442
+6  6            NA                NA        Small      0.06153313
 ```
 
 Validation Plotting
@@ -142,7 +142,7 @@ If real data is not available, a user can use this suite to simuate the desired 
 *  Simulate and optionally validate data
 *  Organize simulated data by nodes in a data model and export to json for easy upload
 
-Special thanks to Robert Grossman, Ph.D (Director) and Francisco Ortuno, Ph.D;  (Senior Bioinformatician) at the [Center for Data Intensive Science](https://cdis.uchicago.edu/) at University of Chicago for help planning this suite. 
+Special thanks to Robert Grossman, Ph.D (Director) and Francisco Ortuno, Ph.D;  (Senior Bioinformatician) at the [Center for Data Intensive Science](https://cdis.uchicago.edu/) at University of Chicago.
 
 <a href="https://github.com/occ-data/data-simulator">github.com/occ-data/data-simulator</a>
 
